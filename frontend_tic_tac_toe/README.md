@@ -1,82 +1,109 @@
-# Lightweight React Template for KAVIA
+# Tic Tac Toe (React) — Application Flow
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+This repository contains a React single-page application (SPA). The overall work item describes a Tic Tac Toe game, but the current implementation in this container is a lightweight React template that demonstrates theme toggling (light/dark) and a sample Create React App landing UI. This README documents the flow that is currently implemented in the code.
 
-## Features
+## What the app does right now
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+When you run the app, you will see:
 
-## Getting Started
+A centered page with a theme toggle button in the top-right, a React logo, a short instruction to edit `src/App.js`, the current theme label, and a link to the React documentation. There is no Tic Tac Toe board, turn logic, winner/draw detection, or reset functionality implemented in the current code.
 
-In the project directory, you can run:
+## Application flow (runtime)
 
-### `npm start`
+### 1) Page load and bootstrapping
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The application starts at:
 
-### `npm test`
+- `src/index.js`, which creates the React root and renders `<App />` into the DOM element with id `root`.
 
-Launches the test runner in interactive watch mode.
+The DOM root element is defined in:
 
-### `npm run build`
+- `public/index.html` (`<div id="root"></div>`)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2) Main component and state
 
-## Customization
+The main UI is implemented in:
 
-### Colors
+- `src/App.js`
 
-The main brand colors are defined as CSS variables in `src/App.css`:
+`App` is a functional component that maintains a single piece of state:
 
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+- `theme` (string): defaults to `"light"` and can be toggled to `"dark"`.
+
+### 3) Theme application side-effect
+
+`App` uses a `useEffect` hook to apply the selected theme to the global document:
+
+- On initial mount and whenever `theme` changes, the effect sets an attribute on the document root:
+  - `document.documentElement.setAttribute('data-theme', theme)`
+
+This is the core mechanism that drives theming throughout the page.
+
+### 4) Styling and theming
+
+The CSS theme variables and styles live in:
+
+- `src/App.css`
+
+The CSS defines:
+
+- Light theme variables under `:root`
+- Dark theme overrides under `[data-theme="dark"]`
+
+Because the React effect sets `data-theme` on the `<html>` element, the CSS selector `[data-theme="dark"]` activates when the theme is dark, changing background and text colors accordingly.
+
+### 5) User interaction: toggling the theme
+
+In the UI, the user clicks the theme toggle button (`.theme-toggle`).
+
+- Clicking the button calls `toggleTheme`, which flips `theme` from `"light"` to `"dark"` (or vice versa).
+- Updating `theme` causes a re-render.
+- The `useEffect` runs again and updates `data-theme` on the document.
+- CSS variables switch, and the page transitions to the new theme.
+
+The button uses an `aria-label` to improve accessibility by describing the action (switching to the opposite theme).
+
+## How the Tic Tac Toe flow would be expected to work (not yet implemented)
+
+The work item describes a Tic Tac Toe game with a centered 3x3 board, a status display above, and action buttons (such as Reset) below. At present, none of this behavior exists in `src/App.js`. Once implemented, a typical flow would include:
+
+- Maintaining game state (board squares, current player, winner/draw state).
+- Handling square clicks to place `X`/`O`.
+- Preventing moves after a win/draw.
+- Calculating and displaying status text (next player, winner, or draw).
+- Resetting the game state on Reset.
+
+If/when the game UI replaces the template UI, this README should be updated to reflect the actual implemented components and state transitions.
+
+## Local development
+
+From `web-tic-tac-toe-206338-206347/frontend_tic_tac_toe`:
+
+### Start the dev server
+
+```bash
+npm start
 ```
 
-### Components
+Then open:
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+- http://localhost:3000
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+### Run tests
 
-## Learn More
+```bash
+npm test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Build
 
-### Code Splitting
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Key files
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `src/index.js`: React entry point; mounts `<App />`.
+- `src/App.js`: Main component; holds `theme` state and toggle logic.
+- `src/App.css`: Theme variables and component styles.
+- `public/index.html`: HTML template with the `root` mounting element.
